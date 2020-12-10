@@ -25,6 +25,11 @@ dependencies:
 library:
   source-dirs: src
 
+  dependencies:
+      - split
+      - text
+      - attoparsec
+
 executables:
   seatbelt-exe:
     main:                Main.hs
@@ -49,3 +54,4 @@ tests:
     - -with-rtsopts=-N
     dependencies:
     - seatbelt
+    - hspec

@@ -3,7 +3,28 @@
 # For more information, please see the documentation at:
 #   https://docs.haskellstack.org/en/stable/lock_files
 
-packages: []
+packages:
+- completed:
+    hackage: split-0.2.3.4@sha256:bad9bfc9e8e0aca4ac1f7b3a2767ee6b1c199d4a1b6960db5cc3d7674aee5d73,2564
+    pantry-tree:
+      size: 439
+      sha256: d931baa404f6867a23ed342c11ef27613227a7a82ba2324f95da184fffad0bd9
+  original:
+    hackage: split-0.2.3.4
+- completed:
+    hackage: hspec-2.7.4@sha256:8d0430e4a7ba8fa1482a1766fd4973f0c5e7c5adf512bded7358269bb9486c9e,1692
+    pantry-tree:
+      size: 532
+      sha256: 6a6ba1798090ee6245f5995303b6ccf1afea26c73d4e69b95330c8914056d420
+  original:
+    hackage: hspec-2.7.4
+- completed:
+    hackage: attoparsec-0.13.2.4@sha256:5941a05141a61239e8d6c4f2c9876bec3765d786766721b8474b8625febf914a,5796
+    pantry-tree:
+      size: 5231
+      sha256: 623047a3f229b2cd082928f7d78c5cac15558504949e5999fad734eff820fa30
+  original:
+    hackage: attoparsec-0.13.2.4
 snapshots:
 - completed:
     size: 533252
