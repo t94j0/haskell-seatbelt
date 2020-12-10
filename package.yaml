@@ -1,0 +1,51 @@
+name:                seatbelt
+version:             0.1.0.0
+github:              "t94j0/seatbelt"
+license:             BSD3
+author:              "Max Harley"
+maintainer:          "maxh@maxh.io"
+copyright:           "Copyright (c) 2020 Maxwell Harley"
+
+extra-source-files:
+- README.md
+- ChangeLog.md
+
+# Metadata used when publishing your package
+# synopsis:            Short description of your package
+# category:            security
+
+# To avoid duplicated efforts in documentation and dealing with the
+# complications of embedding Haddock markup inside cabal files, it is
+# common to point users to the README.md file.
+description:         Please see the README on GitHub at <https://github.com/t94j0/seatbelt#readme>
+
+dependencies:
+- base >= 4.7 && < 5
+
+library:
+  source-dirs: src
+
+executables:
+  seatbelt-exe:
+    main:                Main.hs
+    source-dirs:         app
+    ghc-options:
+    - -threaded
+    - -rtsopts
+    - -with-rtsopts=-N
+    dependencies:
+    - seatbelt
+    - unix
+    - filepath
+    - directory
+
+tests:
+  seatbelt-test:
+    main:                Spec.hs
+    source-dirs:         test
+    ghc-options:
+    - -threaded
+    - -rtsopts
+    - -with-rtsopts=-N
+    dependencies:
+    - seatbelt
