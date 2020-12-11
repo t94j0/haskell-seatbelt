@@ -4,13 +4,17 @@ module Data.Passwd where
 import Control.Applicative
 import Data.Attoparsec.Text
 import qualified Data.Text as T
+import Text.Printf
 
 --
 standardShells :: [T.Text]
 standardShells = ["/usr/sbin/nologin", "/bin/false"]
 
 -- PasswdEntry
-data PasswdEntry = PasswdEntry { username, password :: T.Text, uid, gid :: Int, comment, home, shell :: T.Text} deriving (Eq, Show)
+data PasswdEntry = PasswdEntry { username, password :: T.Text, uid, gid :: Int, comment, home, shell :: T.Text} deriving (Eq)
+
+instance Show PasswdEntry where
+    show (PasswdEntry u p uid gid c h s) = printf "%s:%s:%d:%d:%s:%s:%s" u p uid gid c h s
 
 parsePasswdEntry' :: Parser PasswdEntry
 parsePasswdEntry' = do
@@ -37,9 +41,13 @@ parsePasswdEntry = parseOnly parsePasswdEntry'
 -- Passwd
 type Passwd = [PasswdEntry]
 
+showPasswd :: Passwd -> String
+showPasswd xs = concat $ map (\x -> show x++"\n") xs
+
 passwdParser' :: Parser Passwd
 passwdParser' = many $ parsePasswdEntry' <* endOfLine
 
+parseLocalPasswd :: IO (Either String Passwd)
 parseLocalPasswd = do
     file <- readFile "/etc/passwd"
     return $ parsePasswd $ T.pack file
@@ -48,8 +56,8 @@ parsePasswd :: T.Text -> Either String Passwd
 parsePasswd = parseOnly passwdParser'
 
 -- Passwd utils
-findGUIDZero :: Passwd -> Passwd
-findGUIDZero = filter (\x -> uid x == 0 || gid x == 0)
+findUIDGIDZero :: Passwd -> Passwd
+findUIDGIDZero = filter (\x -> uid x == 0 || gid x == 0)
 
 findNonstandardShell :: Passwd -> Passwd
-findNonstandardShell xs = filter (\x -> not $ shell x `elem` standardShells) xs
+findNonstandardShell = filter (\x -> not $ shell x `elem` standardShells)

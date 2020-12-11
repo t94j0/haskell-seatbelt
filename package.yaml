@@ -39,10 +39,12 @@ executables:
     - -rtsopts
     - -with-rtsopts=-N
     dependencies:
+    - process
     - seatbelt
     - unix
     - filepath
     - directory
+    - pretty-terminal
 
 tests:
   seatbelt-test:

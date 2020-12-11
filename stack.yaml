@@ -8,3 +8,4 @@ extra-deps:
     - split-0.2.3.4
     - hspec-2.7.4
     - attoparsec-0.13.2.4
+    - pretty-terminal-0.1.0.0

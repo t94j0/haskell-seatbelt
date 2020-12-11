@@ -9,18 +9,10 @@ main :: IO ()
 main = hspec $ do
   describe "Shadow" $ do
     it "parses /etc/shadow file" $ do
-        let s = parseShadowString "root:!:18568:0:99999:7:::\ndaemon:*:18474:0:99999:7:::"
-        getUsers s `shouldBe` ["root", "daemon"]
-
-        case getUser s "root" of
-          Just user -> do
-              hash user `shouldBe` "!"
-              dateCreated user `shouldBe` "18568"
-          Nothing -> expectationFailure "should exist"
-        case getUser s "daemon" of
-          Just user -> do
-              hash user `shouldBe` "*"
-              dateCreated user `shouldBe` "18474"
+        let tgt = "root:!:18568:0:99999:7:::\ndaemon:*:18474:0:99999:7:::\n"
+        case parseShadow tgt of
+          Left x -> expectationFailure x
+          Right x -> x `shouldBe` [ShadowEntry "root" "!" "18568", ShadowEntry "daemon" "*" "18474"]
 
   describe "Passwd" $ do
     it "parses passwd entry" $ do
@@ -43,6 +35,6 @@ main = hspec $ do
 
     it "finds nonstandard shells" $ do
         let inp = [PasswdEntry "root" "x" 0 0 "root" "/root" "/bin/bash", PasswdEntry "daemon" "x" 1 1 "daemon" "/usr/sbin" "/usr/sbin/nologin"]
-        case findGUIDZero inp of
+        case findNonstandardShell inp of
           x:[] -> Data.Passwd.username x `shouldBe` "root"
           _ -> expectationFailure "not root"

@@ -4,7 +4,7 @@ cabal-version: 1.12
 --
 -- see: https://github.com/sol/hpack
 --
--- hash: 4ed52c914d0e751d105cf74fe40b94034750b6076ea3c02c4b9bd2ded1e22b9e
+-- hash: db6e24a0b9ca3bb1d218912d11abc66441652664dcca480a6d5804fb187801b3
 
 name:           seatbelt
 version:        0.1.0.0
@@ -51,6 +51,8 @@ executable seatbelt-exe
       base >=4.7 && <5
     , directory
     , filepath
+    , pretty-terminal
+    , process
     , seatbelt
     , unix
   default-language: Haskell2010

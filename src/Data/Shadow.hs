@@ -1,50 +1,52 @@
+{-# LANGUAGE OverloadedStrings #-}
 module Data.Shadow where
 
-import System.IO  
-import Data.List
-import Data.List.Split
+
+import Control.Applicative
+import Data.Attoparsec.Text
+import qualified Data.Text as T
 import Text.Printf
 
-data Shadow = Shadow {
-  users :: [ShadowEntry]
-} deriving (Show)
+standardShells :: [T.Text]
+standardShells = ["/usr/sbin/nologin", "/bin/false"]
 
-parseShadowString :: String -> Shadow
-parseShadowString shadow = Shadow $ map parseShadowEntryString (words shadow)
-
-parseShadowFile :: String -> IO Shadow
-parseShadowFile fileName  = do
-  content <- readFile fileName
-  return $ parseShadowString content
-
-parseShadowLocal :: IO Shadow
-parseShadowLocal = parseShadowFile "/etc/shadow"
-
-getUsers :: Shadow -> [String]
-getUsers shadow = [ username s | s <- (users shadow) ]
-
-hasName :: String -> ShadowEntry -> Bool
-hasName target user = (username user) == target
-
-getUser :: Shadow -> String -> Maybe ShadowEntry
-getUser shadow username = find (hasName username) (users shadow)
-
-
-data ShadowEntry = ShadowEntry {
-  username :: String,
-  hash :: String,
-  dateCreated :: String
-}
+-- ShadowEntry
+data ShadowEntry = ShadowEntry { username, hash, lastChanged :: T.Text } deriving (Eq)
 
 instance Show ShadowEntry where
-    show (ShadowEntry u h d) = printf "%s %s %s" u h d
+    show (ShadowEntry u h l) = printf "%s:%s:%s" u h l
 
-stringToInt :: String -> Integer
-stringToInt x = read x :: Integer
+parseShadowEntry' :: Parser ShadowEntry
+parseShadowEntry' = do
+    let tillColon = takeTill ((==) ':')
+    username <- tillColon
+    char ':'
+    hash <- tillColon
+    char ':'
+    lastChanged <- tillColon
+    takeTill isEndOfLine
 
-getValue :: String -> Int -> String
-getValue x y = splitOn ":" x !! y
+    return $ ShadowEntry username hash lastChanged
 
-parseShadowEntryString :: String -> ShadowEntry
-parseShadowEntryString x = ShadowEntry (getValue x 0) (getValue x 1) (getValue x 2)
+parseShadowEntry :: T.Text -> Either String ShadowEntry
+parseShadowEntry = parseOnly parseShadowEntry'
 
+-- Shadow
+type Shadow = [ShadowEntry]
+
+showShadow :: Shadow -> String
+showShadow xs = concat $ map (\x -> show x++"\n") xs
+
+passwdParser' :: Parser Shadow
+passwdParser' = many $ parseShadowEntry' <* endOfLine
+
+parseLocalShadow = do
+    file <- readFile "/etc/shadow"
+    return $ parseShadow $ T.pack file
+
+parseShadow :: T.Text -> Either String Shadow
+parseShadow = parseOnly passwdParser'
+
+-- Shadow utils
+usersWithHash :: Shadow -> Shadow
+usersWithHash = filter (\x -> hash x /= "!" && hash x /= "*" && hash x /= "!!")
